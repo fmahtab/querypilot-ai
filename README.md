@@ -1,6 +1,7 @@
 # QueryPilot AI
 
 AI-powered retail sales analytics copilot built with FastAPI, OpenAI, and PostgreSQL.
+> **Note:** RetailStar is a fictional company created for educational and demonstration purposes.
 
 ## Overview
 
@@ -55,3 +56,7 @@ Example questions:
 ## Project Status
 
 🚧 Under active development as part of an AI Engineering Bootcamp capstone.
+
+## Disclaimer
+
+RetailStar is a fictional company created solely for educational and demonstration purposes. All business data, documentation, products, and scenarios in this project are fictional and do not represent any real organization.

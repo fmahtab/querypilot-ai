@@ -1,0 +1,15 @@
+services:
+  db:
+    image: pgvector/pgvector:pg18-trixie
+    container_name: querypilot-postgres
+    environment:
+      POSTGRES_DB: querypilot
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: testdb
+    ports:
+      - "5433:5432"
+    volumes:
+      - querypilot_data:/var/lib/postgresql
+
+volumes:
+  querypilot_data:

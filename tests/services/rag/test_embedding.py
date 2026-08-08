@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 
 from app.core.config import settings
 from app.schemas.rag import DocumentChunk
-from app.services.rag.embedding import build_embed_text, embed_chunks
+from app.services.rag.embedding import build_embed_text, embed_chunks, embed_query
 
 
 class TestBuildEmbedText(unittest.TestCase):
@@ -79,6 +79,25 @@ class TestEmbedChunks(unittest.TestCase):
         self.assertIn("Document: Doc A", call_kwargs["input"][0])
         self.assertIn("Document: Doc B", call_kwargs["input"][1])
         self.assertEqual(embeddings, [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]])
+
+
+class TestEmbedQuery(unittest.TestCase):
+    @patch("app.services.rag.embedding.OpenAI")
+    def test_embeds_raw_question_text(self, mock_openai_cls: MagicMock) -> None:
+        mock_client = MagicMock()
+        mock_openai_cls.return_value = mock_client
+        mock_client.embeddings.create.return_value = MagicMock(
+            data=[MagicMock(embedding=[0.1, 0.2, 0.3])]
+        )
+
+        embedding = embed_query("What is low inventory?", client=mock_client)
+
+        mock_client.embeddings.create.assert_called_once_with(
+            model=settings.openai_embedding_model,
+            input="What is low inventory?",
+            dimensions=settings.embedding_dimensions,
+        )
+        self.assertEqual(embedding, [0.1, 0.2, 0.3])
 
 
 if __name__ == "__main__":

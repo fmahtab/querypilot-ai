@@ -33,3 +33,18 @@ def embed_chunks(
     )
 
     return [item.embedding for item in response.data]
+
+
+def embed_query(
+    question: str,
+    client: OpenAI | None = None,
+) -> list[float]:
+    openai_client = client or OpenAI(api_key=settings.openai_api_key)
+
+    response = openai_client.embeddings.create(
+        model=settings.openai_embedding_model,
+        input=question,
+        dimensions=settings.embedding_dimensions,
+    )
+
+    return response.data[0].embedding

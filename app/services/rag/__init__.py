@@ -33,5 +33,6 @@ def ingest_retailstar_docs(docs_dir: Path | str | None = None) -> list[DocumentC
 
 
 from app.services.rag.indexer import index_retailstar_docs
+from app.services.rag.retrieval import retrieve_retailstar_docs
 
-__all__ = ["ingest_retailstar_docs", "index_retailstar_docs"]
+__all__ = ["ingest_retailstar_docs", "index_retailstar_docs", "retrieve_retailstar_docs"]

@@ -74,3 +74,19 @@ def replace_all_chunks(
     db.add_all(rows)
     db.commit()
     return len(rows)
+
+
+def search_similar_chunks(
+    db: Session,
+    query_embedding: list[float],
+    top_k: int,
+    embedding_model: str | None = None,
+) -> list[tuple[RagChunk, float]]:
+    distance = RagChunk.embedding.cosine_distance(query_embedding)
+    query = db.query(RagChunk, distance.label("distance")).order_by(distance)
+
+    if embedding_model is not None:
+        query = query.filter(RagChunk.embedding_model == embedding_model)
+
+    rows = query.limit(top_k).all()
+    return [(row, 1 - dist) for row, dist in rows]

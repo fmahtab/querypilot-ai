@@ -6,6 +6,9 @@ from app.schemas.rag import RetrievedChunk, RetrievalResult
 from app.services.rag.embedding import embed_query
 from app.services.rag.repository import search_similar_chunks
 
+MIN_TOP_K = 1
+MAX_TOP_K = 20
+
 
 def retrieve_retailstar_docs(
     question: str,
@@ -17,6 +20,8 @@ def retrieve_retailstar_docs(
         raise ValueError("Question must not be empty.")
 
     limit = top_k if top_k is not None else settings.rag_top_k
+    if not MIN_TOP_K <= limit <= MAX_TOP_K:
+        raise ValueError(f"top_k must be between {MIN_TOP_K} and {MAX_TOP_K}.")
     owns_session = db is None
     session = db or SessionLocal()
 

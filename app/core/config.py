@@ -1,3 +1,4 @@
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -7,7 +8,7 @@ class Settings(BaseSettings):
     retailstar_docs_path: str = "data/retailstar_docs"
     openai_embedding_model: str
     embedding_dimensions: int
-    rag_top_k: int
+    rag_top_k: int = Field(ge=1, le=20)
 
     database_url: str
     openai_api_key: str

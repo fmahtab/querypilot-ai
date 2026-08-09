@@ -98,6 +98,28 @@ class TestRetrieveRetailstarDocs(unittest.TestCase):
         with self.assertRaises(ValueError):
             retrieve_retailstar_docs("", db=self.mock_db)
 
+    def test_raises_when_top_k_below_minimum(self) -> None:
+        with self.assertRaises(ValueError):
+            retrieve_retailstar_docs("What is low inventory?", top_k=0, db=self.mock_db)
+
+    def test_raises_when_top_k_above_maximum(self) -> None:
+        with self.assertRaises(ValueError):
+            retrieve_retailstar_docs("What is low inventory?", top_k=21, db=self.mock_db)
+
+    @patch("app.services.rag.retrieval.search_similar_chunks")
+    @patch("app.services.rag.retrieval.embed_query")
+    def test_accepts_top_k_at_boundaries(
+        self,
+        mock_embed_query: MagicMock,
+        mock_search: MagicMock,
+    ) -> None:
+        mock_embed_query.return_value = [0.1]
+        mock_search.return_value = []
+
+        for k in (1, 20):
+            result = retrieve_retailstar_docs("question?", top_k=k, db=self.mock_db)
+            self.assertEqual(result.top_k, k)
+
 
 if __name__ == "__main__":
     unittest.main()

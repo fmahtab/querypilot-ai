@@ -93,7 +93,10 @@ class ReasoningService:
             context = "\n\n---\n\n".join(
                 [chunk.content for chunk in result.chunks]
                 )
-            
+            sources_set = {
+                chunk.source_file for chunk in result.chunks
+            }
+            sources = list(sources_set)
          
             rag_input = f"""
             context:
@@ -113,13 +116,12 @@ class ReasoningService:
         
             return AskResponse(
                 answer = response.output_text,
-                requires_database = False
+                requires_database = False,
+                sources = sources
             )
 
         if question_type == "GENERAL":
         
-            
-         
         
             response = self.client.responses.create(            
                 model=settings.openai_model,

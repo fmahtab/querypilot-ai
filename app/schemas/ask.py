@@ -13,3 +13,4 @@ class AskRequest(BaseModel):
 class AskResponse(BaseModel):
         answer: str
         requires_database: bool
+        sources: list[str] = Field(default_factory=list)

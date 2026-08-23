@@ -1,0 +1,92 @@
+[
+    {
+        "question": "What is considered low inventory?",
+        "expected_route": "KNOWLEDGE_BASE",
+        "expected_behavior": {
+            "requires_database": false,
+            "answer_mentions": [
+                "below the minimum threshold"
+            ],
+            "sources_contains": "inventory_policy.md"
+        }
+    },
+    {
+        "question": "Can I return opened acrylic paint?",
+        "expected_route": "KNOWLEDGE_BASE",
+        "expected_behavior": {
+            "requires_database": false,
+            "answer_mentions_any": [
+                "cannot be returned",
+                "not returnable"
+            ],
+            "sources_contains": "returns_policy.md"
+        }
+    },
+    {
+        "question": "Can I return cut-to-order fabric?",
+        "expected_route": "KNOWLEDGE_BASE",
+        "expected_behavior": {
+            "requires_database": false,
+            "answer_mentions_any": [
+                "non-returnable",
+                "not returnable"
+              ],
+            "sources_contains": "returns_policy.md"
+        }
+    },
+    {
+        "question": "What is BOPIS?",
+        "expected_route": "KNOWLEDGE_BASE",
+        "expected_behavior": {
+            "requires_database": false,
+            "answer_mentions": [
+                "Buy Online, Pick Up In Store",
+                "online",
+                "store"
+            ],
+            "sources_contains": "business_glossary.md"
+        }
+    },
+    {
+        "question": "How many days has RetailStar been in business?",
+        "expected_route": "KNOWLEDGE_BASE",
+        "expected_behavior": {
+            "requires_database": false,
+            "answer_mentions_any": [
+                "not available",
+                "does not contain",
+                "not enough information"
+              ]
+        }
+    },
+    {
+        "question": "Which store had the highest sales last month?",
+        "expected_route": "DATABASE",
+        "expected_behavior": {
+            "requires_database": true,
+            "answer_mentions": [   
+                "requires RetailStar business data"
+            ],
+            "sources": []
+        }
+    },
+    {
+        "question": "Which products are currently out of stock?",
+        "expected_route": "DATABASE",
+        "expected_behavior": {
+            "requires_database": true,
+            "answer_mentions": [
+                "requires RetailStar business data"
+            ],
+            "sources": []
+        }
+    },
+    {
+        "question": "What is FastAPI?",
+        "expected_route": "GENERAL",
+        "expected_behavior": {
+            "requires_database": false,
+            "sources": []
+        }
+    }
+]

@@ -28,16 +28,27 @@ RAG_SYSTEM_PROMPT = """
 CLASSIFIER_PROMPT = """
     You are a classifier.
     Classify the user's question into one of the following categories:
-    - RetailStar internal database if it needs live/structured business data
-    like RetailStar-specific policies, definitions, terminology, company information, procedures,
-    or questions about concepts that are defined in RetailStar documentation,
-    even if the user does not explicitly say "RetailStar".
-    - RetailStar Knowledge Base if the answer should come from RetailStar documents
-    like policies, definitions, company overview, terminology, procedures
+    - RetailStar internal database if the question requires structured or changing business data related to RetailStar such as
+        - sales amount
+        - inventory levels
+        - customer records
+        - employee records
+        - store performance
+        - product data
+        - financial metrics
+        - order count
+    
+    - Choose KNOWLEDGE_BASE for relatively static company facts or documented business rules, even if the user does not explicitly mention RetailStar such as
+        - policies
+        - definitions
+        - company history
+        - company overview
+        - founding information
+        - terminology
+        - procedures
     - General knowledge if it is not RetailStar-specific
     like general technical/business knowledge.
     Here are some example classification:
-    "What is considered low inventory?" → KNOWLEDGE_BASE
     "What is BOPIS?" → KNOWLEDGE_BASE
     "Can I return opened acrylic paint?" → KNOWLEDGE_BASE
     "Can I return cut-to-order fabric?" → KNOWLEDGE_BASE
@@ -45,6 +56,10 @@ CLASSIFIER_PROMPT = """
 
     "What is FastAPI?" → GENERAL
     "What is cosine similarity?" → GENERAL
+
+    "Which store had the highest sales last month?" → DATABASE
+    "Which products are currently out of stock?" → DATABASE
+
     Reply with ONLY one word:
     - DATABASE
     - KNOWLEDGE_BASE

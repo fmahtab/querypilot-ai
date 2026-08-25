@@ -393,13 +393,15 @@ GENERAL
 Actual route:
 KNOWLEDGE_BASE
 
-Actual behavior:
+Initial behavior:
 - requires_database: false
 - Answered correctly
 - Used RetailStar-specific information
-- Sources: business_glossary.md, inventory_policy.md
+- Sources: 
+  - business_glossary.md
+  - inventory_policy.md
 
-Result:
+Initial Result:
 FAIL
 
 Open-coding note:
@@ -407,6 +409,19 @@ QueryPilot classified a general retail terminology question as
 RetailStar-specific knowledge. Although the answer was correct,
 the knowledge base was used unnecessarily for a question that
 could be answered with general knowledge.
+
+Root cause:
+The classifier prompt treated definitions and terminology as
+KNOWLEDGE_BASE even when the question did not require RetailStar-specific
+information.
+
+Improvement:
+The classifier instructions were clarified so common business or technical
+terminology is classified as GENERAL unless the question requires a
+RetailStar-specific definition or policy.
+
+Final result:
+PASS
 
 Failure label:
 ROUTING_OVERCLASSIFICATION
@@ -564,4 +579,15 @@ requested information existed in the retrieved knowledge-base document,
 but QueryPilot failed to provide it.
 
 The routing failure in Trace #15 had lower impact because QueryPilot
-used the wrong route but still returned a correct answer.  
+used the wrong route but still returned a correct answer. 
+
+## Evaluation Results
+
+The expanded golden evaluation set initially passed 9 of 11 cases (81.8%).
+
+After addressing the knowledge-base gap identified in Trace #13, the
+evaluation improved to 10/11 (90.9%).
+
+After clarifying the classifier behavior identified in Trace #15, the
+evaluation improved to 11/11 (100%). Repeated evaluation runs continued
+to pass all 11 cases.

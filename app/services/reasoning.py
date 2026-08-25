@@ -48,12 +48,21 @@ CLASSIFIER_PROMPT = """
         - procedures
     - General knowledge if it is not RetailStar-specific
     like general technical/business knowledge.
+    
+    For common business or technical terms, choose GENERAL when the question
+    asks only for the general meaning of the term and does not require a
+    RetailStar-specific definition or policy.
+    A term may still be KNOWLEDGE_BASE when it is defined by RetailStar
+    documentation or its meaning depends on RetailStar-specific business rules.
+
     Here are some example classification:
     "What is BOPIS?" → KNOWLEDGE_BASE
     "Can I return opened acrylic paint?" → KNOWLEDGE_BASE
     "Can I return cut-to-order fabric?" → KNOWLEDGE_BASE
     "What is considered low inventory?" → KNOWLEDGE_BASE
-
+    
+    "What does API mean?" → GENERAL
+    "What does REST mean?" → GENERAL
     "What is FastAPI?" → GENERAL
     "What is cosine similarity?" → GENERAL
 

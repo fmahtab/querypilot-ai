@@ -324,7 +324,7 @@ KNOWLEDGE_BASE
 Expected answer:
 5 business days
 
-Actual behavior:
+Initial behavior:
 - requires_database: false
 - Sources:
   - returns_policy.md
@@ -332,16 +332,29 @@ Actual behavior:
 - Answer:
   "The information is not available in the RetailStar knowledge base."
 
-Result:
+Initial Result:
 FAIL
 
 Open-coding note:
 QueryPilot reached the correct knowledge-base path and retrieved
-inventory_policy.md, which contains the 5-business-day BOPIS rule,
-but failed to use that information when generating the answer.
+inventory_policy.md. Further inspection showed that the document stated
+that unpicked BOPIS inventory is released after 5 business days, but did
+not explicitly state that customers have 5 business days to pick up an order.
+
+Root cause:
+The expected business rule was not explicitly documented in the
+knowledge base.
+
+Improvement:
+The BOPIS policy was clarified in inventory_policy.md to explicitly state
+that customers have 5 business days to pick up an order. The document
+was re-indexed and the same evaluation case then passed.
+
+Final result:
+PASS
 
 Failure label:
-ANSWER_GROUNDING_FAILURE
+KNOWLEDGE_BASE_GAP
 
 
 ### Trace #14
@@ -500,16 +513,18 @@ relevant document or context is not retrieved.
 Observed:
 - No retrieval failures were observed in the reviewed traces.
 
-### 3. Answer Grounding Failure
+### 3. Knowledge Base Gap
 
-The relevant information exists in the knowledge base and the correct
-document/context is retrieved, but QueryPilot fails to use the retrieved
-information correctly when generating the answer.
+The expected information is missing or not explicitly documented in the
+knowledge base, preventing QueryPilot from providing the expected grounded answer.
 
 Observed:
 - Trace #13: "How long do customers have to pick up a BOPIS order?"
-- `inventory_policy.md` was retrieved and contained the 5-business-day rule,
-  but QueryPilot responded that the information was not available.
+- The knowledge base documented that unpicked BOPIS inventory is released
+  after 5 business days, but did not explicitly state the customer's pickup
+  deadline.
+- After the business rule was explicitly documented and the knowledge base
+  was re-indexed, the evaluation case passed.
 
 ### 4. Unsupported Answer Failure
 
@@ -534,16 +549,16 @@ Priority score = Frequency × Impact
 
 | Failure Type | Frequency | Impact | Priority Score |
 |---|---:|---:|---:|
-| ANSWER_GROUNDING_FAILURE | 1 | High (3) | 3 |
+| KNOWLEDGE_BASE_GAP | 1 | High (3) | 3 |
 | ROUTING_FAILURE | 1 | Medium (2) | 2 |
 | RETRIEVAL_FAILURE | 0 | High (3) | 0 |
 | UNSUPPORTED_ANSWER_FAILURE | 0 | High (3) | 0 |
 
 ### Priority
 
-ANSWER_GROUNDING_FAILURE is the highest-priority observed failure.
+KNOWLEDGE_BASE_GAP is the highest-priority observed failure.
 
-Although ANSWER_GROUNDING_FAILURE and ROUTING_FAILURE were each observed
+Although KNOWLEDGE_BASE_GAP and ROUTING_FAILURE were each observed
 once, the grounding failure has greater user impact. In Trace #13, the
 requested information existed in the retrieved knowledge-base document,
 but QueryPilot failed to provide it.

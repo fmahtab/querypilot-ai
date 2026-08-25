@@ -179,7 +179,8 @@ Category managers submit seasonal buy plans to operations **before** the plannin
 - BOPIS orders reserve inventory at the selected store at time of order placement.
 - Reserved quantity is deducted from available on-hand inventory immediately.
 - If the reserved SKU falls below minimum threshold after reservation, a low inventory alert is triggered.
-- Unpicked BOPIS orders release reserved inventory back to available stock after **5 business days**.
+- Customers have **5 business days** to pick up a BOPIS order.
+- If the order is not picked up within 5 business days, the reserved inventory is released back to available stock.
 
 ---
 

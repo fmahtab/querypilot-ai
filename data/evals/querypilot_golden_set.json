@@ -88,5 +88,38 @@
             "requires_database": false,
             "sources": []
         }
+    },
+    {
+        "question": "How long do customers have to pick up a BOPIS order?",
+        "expected_route": "KNOWLEDGE_BASE",
+        "expected_behavior": {
+            "requires_database": false,
+            "answer_mentions": [
+                "5 business days"
+            ],
+            "sources_contains": "inventory_policy.md"
+        }
+    },
+    {
+        "question": "What does SKU mean?",
+        "expected_route": "GENERAL",
+        "expected_behavior": {
+            "requires_database": false,
+            "answer_mentions": [
+                "Stock Keeping Unit"
+            ],
+            "sources": []
+        }
+    },
+    {
+        "question": "What does SKU mean at RetailStar?",
+        "expected_route": "KNOWLEDGE_BASE",
+        "expected_behavior": {
+            "requires_database": false,
+            "answer_mentions": [
+                "Stock Keeping Unit"
+            ],
+            "sources_contains": "business_glossary.md"
+        }
     }
 ]

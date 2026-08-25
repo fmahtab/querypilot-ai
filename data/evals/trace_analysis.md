@@ -326,7 +326,7 @@ Expected answer:
 
 Actual behavior:
 - requires_database: false
-- Retrieved:
+- Sources:
   - returns_policy.md
   - inventory_policy.md
 - Answer:
@@ -475,3 +475,78 @@ documents or database data.
 
 Failure label:
 None
+
+
+
+## Failure Taxonomy
+
+The manual review of 18 QueryPilot traces identified observed failures
+and defined the following failure taxonomy for evaluating QueryPilot.
+
+### 1. Routing Failure
+
+The question is classified into the wrong processing path:
+DATABASE, KNOWLEDGE_BASE, or GENERAL.
+
+Observed:
+- Trace #15: "What does SKU mean?"
+- Expected GENERAL but QueryPilot classified it as KNOWLEDGE_BASE.
+
+### 2. Retrieval Failure
+
+The question is correctly routed to the knowledge base, but the
+relevant document or context is not retrieved.
+
+Observed:
+- No retrieval failures were observed in the reviewed traces.
+
+### 3. Answer Grounding Failure
+
+The relevant information exists in the knowledge base and the correct
+document/context is retrieved, but QueryPilot fails to use the retrieved
+information correctly when generating the answer.
+
+Observed:
+- Trace #13: "How long do customers have to pick up a BOPIS order?"
+- `inventory_policy.md` was retrieved and contained the 5-business-day rule,
+  but QueryPilot responded that the information was not available.
+
+### 4. Unsupported Answer Failure
+
+The requested information is not supported by the available knowledge,
+but QueryPilot generates or invents an answer instead of refusing to answer.
+
+Observed:
+- No unsupported answer failures were observed.
+- Traces #5, #10, and #12 correctly refused to provide an answer when the
+  requested information was not available in the RetailStar knowledge base.
+
+## Failure Prioritization
+
+Failures were prioritized using frequency and impact.
+
+Impact scale:
+- Low = 1
+- Medium = 2
+- High = 3
+
+Priority score = Frequency × Impact
+
+| Failure Type | Frequency | Impact | Priority Score |
+|---|---:|---:|---:|
+| ANSWER_GROUNDING_FAILURE | 1 | High (3) | 3 |
+| ROUTING_FAILURE | 1 | Medium (2) | 2 |
+| RETRIEVAL_FAILURE | 0 | High (3) | 0 |
+| UNSUPPORTED_ANSWER_FAILURE | 0 | High (3) | 0 |
+
+### Priority
+
+ANSWER_GROUNDING_FAILURE is the highest-priority observed failure.
+
+Although ANSWER_GROUNDING_FAILURE and ROUTING_FAILURE were each observed
+once, the grounding failure has greater user impact. In Trace #13, the
+requested information existed in the retrieved knowledge-base document,
+but QueryPilot failed to provide it.
+
+The routing failure in Trace #15 had lower impact because QueryPilot
+used the wrong route but still returned a correct answer.  

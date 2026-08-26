@@ -21,10 +21,13 @@ def load_golden_set():
 
     return golden_set
 
-if __name__ == "__main__":
+def run_evals():
     golden_set = load_golden_set()
+
     service = ReasoningService()
+
     passed_cases = 0
+    results = []
     for case in golden_set:
         case_results = []
         question = case["question"]
@@ -101,16 +104,40 @@ if __name__ == "__main__":
 
         if case_passed:
             passed_cases += 1
-            print(f"PASS | {question}")
-        else:
-            print(f"FAIL | {question}")
-
-            for result in case_results:
-                if not result["passed"]:
-                    print(f"  - {result['message']}")
+            #print(f"PASS | {question}")
+        results.append({
+            "question": question,
+            "passed": case_passed,
+            "checks": case_results,
+        })
 
 
     score = passed_cases / len(golden_set) * 100
+    
+    return {
+        "passed_cases": passed_cases,
+        "total_cases": len(golden_set),
+        "score": score,
+        "results": results,
+    }
+
+
+if __name__ == "__main__":
+    summary = run_evals()
+    
+    for case in summary["results"]:
+        
+
+        if case['passed']:
+            print(f"PASS | {case['question']}")
+        else:
+            print(f"FAIL | {case['question']}")
+
+            for check in case['checks']:
+                if not check["passed"]:
+                    print(f"  - {check['message']}")
+
+    
     print("\nSummary")
-    print(f"Passed cases: {passed_cases}/{len(golden_set)}")
-    print(f"Score: {score:.1f}%")    
+    print(f"Passed cases: {summary['passed_cases']}/{summary['total_cases']}")
+    print(f"Score: {summary['score']:.1f}%")    

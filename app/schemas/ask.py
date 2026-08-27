@@ -1,5 +1,9 @@
 from pydantic import BaseModel, Field
 
+class ConversationMessage(BaseModel):
+    role: str
+    content: str
+    
 class AskRequest(BaseModel):
     question: str = Field(
         ...,
@@ -9,6 +13,7 @@ class AskRequest(BaseModel):
         examples=["Which products generated the highest revenue last quarter?",
         "Which stores have low inventory?"]
     )
+    history: list[ConversationMessage] = Field(default_factory=list)
 
 class AskResponse(BaseModel):
         answer: str

@@ -76,14 +76,62 @@ CLASSIFIER_PROMPT = """
     Do not explain your answer.
     """
 
-    
+CONTEXTUALIZE_PROMPT = """
+    You rewrite follow-up questions into standalone questions using the
+    provided conversation history.
 
+    Resolve references such as "it", "that", "that status", or "they"
+    when the conversation provides enough context.
+
+    Do not answer the question.
+    Do not add facts that are not present in the conversation.
+    If the question already makes sense on its own, return it unchanged.
+
+    Return only the standalone question.
+    """  
+
+MAX_HISTORY_MESSAGES = 10
 
 class ReasoningService:
 
     def __init__(self):
         self.client = OpenAI(api_key=settings.openai_api_key)
     
+    def _contextualize_question(
+            self,
+            question: str,
+            history: list[dict],
+        ) -> str:
+            if not history:
+                return question
+
+            recent_history = history[-MAX_HISTORY_MESSAGES:]
+
+            conversation = "\n".join(
+                f"{message['role']}: {message['content']}"
+                for message in recent_history
+            )
+
+            contextualize_input = f"""
+                Conversation history:
+                {conversation}
+
+                Current question:
+                {question}
+            """
+
+            response = self.client.responses.create(
+                model=settings.openai_model,
+                input=[
+                    {"role": "system", "content": CONTEXTUALIZE_PROMPT},
+                    {"role": "user", "content": contextualize_input},
+                ],
+            )
+
+            return response.output_text.strip()
+
+
+
     def _classify_question(self, question: str) -> str:
         
         response = self.client.responses.create(
@@ -97,8 +145,19 @@ class ReasoningService:
         return response.output_text.strip().upper()
 
 
-    def answer_question(self, question: str) -> AskResponse:
-        question_type = self._classify_question(question)
+    def answer_question(
+        self,
+        question: str,
+        history: list[dict] | None = None,
+    ) -> AskResponse:
+
+
+        history = history or []
+        standalone_question = self._contextualize_question(
+            question,
+            history,
+        )
+        question_type = self._classify_question(standalone_question)
 
         if question_type == "DATABASE":
             return AskResponse(
@@ -109,7 +168,7 @@ class ReasoningService:
         if question_type == "KNOWLEDGE_BASE":
             top_k = 3
             result = retrieve_retailstar_docs(
-                question,
+                standalone_question,
                 top_k=top_k,
                 db=None,
             )
@@ -127,7 +186,7 @@ class ReasoningService:
             {context}
             
             question:
-            {question}
+            {standalone_question}
             """
             
             response = self.client.responses.create(            

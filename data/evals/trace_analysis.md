@@ -573,13 +573,13 @@ Priority score = Frequency × Impact
 
 KNOWLEDGE_BASE_GAP is the highest-priority observed failure.
 
-Although KNOWLEDGE_BASE_GAP and ROUTING_FAILURE were each observed
-once, the grounding failure has greater user impact. In Trace #13, the
-requested information existed in the retrieved knowledge-base document,
-but QueryPilot failed to provide it.
+Although KNOWLEDGE_BASE_GAP and ROUTING_FAILURE were each observed once,
+the knowledge-base gap had greater user impact. In Trace #13, the expected
+customer pickup deadline was not explicitly documented in the knowledge
+base, preventing QueryPilot from providing the expected grounded answer.
 
-The routing failure in Trace #15 had lower impact because QueryPilot
-used the wrong route but still returned a correct answer. 
+The routing failure in Trace #15 had lower impact because QueryPilot used
+the wrong route but still returned a correct answer.
 
 ## Evaluation Results
 

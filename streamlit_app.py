@@ -1,5 +1,6 @@
 import httpx
 import streamlit as st
+from app.services.evals.runner import run_evals
 
 
 st.set_page_config(
@@ -50,4 +51,34 @@ with ask_tab:
                 st.info("This question requires RetailStar database access.")
 
 with eval_tab:
-    st.subheader("Evaluation Results")
+    st.subheader("Eval Results")
+    run_eval_button = st.button(
+        "Run Evaluations",
+        type="primary",
+    )
+    if run_eval_button:
+        with st.spinner("Running evaluations..."):
+            eval_results = run_evals()
+            st.metric(
+                "Score",
+                f"{eval_results['score']:.1f}%",
+            )
+
+            st.write(
+                f"Passed: {eval_results['passed_cases']} / "
+                f"{eval_results['total_cases']}"
+            )
+
+            st.subheader("Evaluation Details")
+
+            for result in eval_results["results"]:
+                if result["passed"]:
+                    st.success(f"PASS | {result['question']}")
+                else:
+                    st.error(f"FAIL | {result['question']}")
+
+                    for check in result["checks"]:
+                        if not check["passed"]:
+                            st.write(f"- {check['message']}")
+
+            

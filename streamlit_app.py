@@ -12,6 +12,10 @@ st.set_page_config(
 st.title("QueryPilot AI")
 st.caption("AI-powered business analytics copilot for RetailStar")
 
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+
 ask_tab, eval_tab = st.tabs(
     ["Ask QueryPilot", "Evaluations"]
 )
@@ -34,11 +38,27 @@ with ask_tab:
         else:
             response = httpx.post(
                 "http://localhost:8000/ask",
-                json={"question": question},
+                json={
+                    "question": question,
+                    "history": st.session_state.messages
+                },
                 timeout=30.0,
             )
 
             data = response.json()
+            st.session_state.messages.append(
+                {
+                    "role": "user",
+                    "content": question,
+                }
+            )
+
+            st.session_state.messages.append(
+                {
+                    "role": "assistant",
+                    "content": data["answer"],
+                }
+            )
 
             st.subheader("Answer")
             st.write(data["answer"])
@@ -49,6 +69,14 @@ with ask_tab:
                     st.write(f"- {source}")
             if data["requires_database"]:
                 st.info("This question requires RetailStar database access.")
+
+            for message in st.session_state.messages:
+                with st.chat_message(message["role"]):
+                    st.write(message["content"])
+
+            if st.button("Clear conversation"):
+                st.session_state.messages = []
+                st.rerun()
 
 with eval_tab:
     st.subheader("Eval Results")

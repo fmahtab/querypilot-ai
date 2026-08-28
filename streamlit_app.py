@@ -32,51 +32,93 @@ with ask_tab:
         type="primary",
     )
 
+    clear_button = st.button(
+        "Clear conversation",
+    )
+    if clear_button:
+        st.session_state.messages = []
+        st.rerun()
+       
     if ask_button:
         if not question.strip():
             st.warning("Please enter a question.")
         else:
-            response = httpx.post(
-                "http://localhost:8000/ask",
-                json={
-                    "question": question,
-                    "history": st.session_state.messages
-                },
-                timeout=30.0,
-            )
-
-            data = response.json()
-            st.session_state.messages.append(
+            history = [
                 {
-                    "role": "user",
-                    "content": question,
+                    "role": message["role"],
+                    "content": message["content"],
                 }
-            )
+                for message in st.session_state.messages
+            ]
+            with st.spinner("Thinking..."):
 
-            st.session_state.messages.append(
-                {
-                    "role": "assistant",
-                    "content": data["answer"],
-                }
-            )
+                response = httpx.post(
+                    "http://localhost:8000/ask",
+                    json={
+                        "question": question,
+                        "history": history
+                    },
+                    timeout=30.0,
+                )
 
-            st.subheader("Answer")
-            st.write(data["answer"])
+                data = response.json()
+                st.session_state.messages.append(
+                    {
+                        "role": "user",
+                        "content": question,
+                    }
+                )
 
-            if data["sources"]:
-                st.subheader("Sources")
-                for source in data["sources"]:
-                    st.write(f"- {source}")
-            if data["requires_database"]:
-                st.info("This question requires RetailStar database access.")
+                st.session_state.messages.append(
+                    {
+                        "role": "assistant",
+                        "content": data["answer"],
+                        "sources": data["sources"],
+                        "requires_database": data["requires_database"]
+                    }
+                )
+                
+                st.rerun()
+            
+    messages = st.session_state.messages
+    if len(messages) >= 2:
+        latest_turn = messages[-2:]
+        older_messages = messages[:-2]
+    else:
+        latest_turn = messages
+        older_messages = []
 
-            for message in st.session_state.messages:
+    # Display most recent turn
+    if latest_turn:
+        st.subheader("Latest Response")
+
+    for message in latest_turn:
+            with st.chat_message(message["role"]):
+                st.write(message["content"])
+
+                if message["role"] == "assistant":
+                    if message.get("sources"):
+                        st.caption(
+                            "Sources: " + ", ".join(message["sources"])
+                        )
+
+    # Display older conversation
+    if older_messages:
+            st.subheader("History")
+            for message in older_messages:
                 with st.chat_message(message["role"]):
                     st.write(message["content"])
 
-            if st.button("Clear conversation"):
-                st.session_state.messages = []
-                st.rerun()
+                    if message["role"] == "assistant":
+                        if message.get("sources"):
+                            st.caption(
+                                "Sources: " + ", ".join(message["sources"])
+                            )
+
+
+
+    
+
 
 with eval_tab:
     st.subheader("Eval Results")

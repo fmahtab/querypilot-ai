@@ -1,0 +1,61 @@
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+
+from app.database.session import SessionLocal
+from app.models.user_memory import UserMemory
+
+def get_user_memories(
+    user_id: str,
+    db: Session | None = None
+) -> list[UserMemory]:
+
+    owns_session = db is None
+    session = db or SessionLocal()
+
+    try:
+        statement = select(UserMemory).where(
+            UserMemory.user_id == user_id
+        )
+        memories = session.scalars(statement).all()
+        return list(memories)
+
+    finally:
+        if owns_session:
+            session.close()
+
+def save_user_memory(
+    user_id: str,
+    memory_key: str,
+    memory_value: str,
+    db: Session | None = None
+) -> UserMemory:
+
+    owns_session = db is None
+    session = db or SessionLocal()
+
+    try:
+        statement = select(UserMemory).where(
+            UserMemory.user_id == user_id,
+            UserMemory.memory_key == memory_key,
+        )
+
+        memory = session.scalar(statement)
+
+        if memory:
+            memory.memory_value = memory_value
+        else:
+            memory = UserMemory(
+                user_id=user_id,
+                memory_key=memory_key,
+                memory_value=memory_value,
+            )
+            session.add(memory)
+
+        session.commit()
+        session.refresh(memory)
+
+        return memory
+
+    finally:
+        if owns_session:
+            session.close()

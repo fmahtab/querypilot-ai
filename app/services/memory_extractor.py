@@ -18,6 +18,10 @@ Rules:
 - Do not store ordinary questions.
 - Do not store RetailStar policies, definitions, or business facts.
 - Do not infer facts that the user did not clearly state.
+- Keep each memory value limited to the information represented by its memory key.
+- Do not include experience level in the role value.
+- Example: "I am an experienced inventory manager" should produce
+  role = "inventory manager" and experience_level = "experienced".
 - If there is nothing worth remembering, return an empty memories list.
 """
 

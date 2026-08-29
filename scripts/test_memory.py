@@ -1,22 +1,26 @@
 from app.services.memory import (
     get_user_memories,
-    save_user_memory
+    process_user_memory,
 )
 
-save_user_memory(
-    user_id="demo-user",
-    memory_key="role",
-    memory_value="inventory_manager",
+user_id = "memory-test-user"
+
+message = "What is BOPIS."
+
+saved_memories = process_user_memory(
+    user_id=user_id,
+    message=message,
 )
 
-memories = get_user_memories("demo-user")
+print("\nSaved memories:")
 
-print(f"Found {len(memories)} memories")
+for memory in saved_memories:
+    print(memory.memory_key, "=", memory.memory_value)
+
+
+print("\nMemories from PostgreSQL:")
+
+memories = get_user_memories(user_id)
 
 for memory in memories:
-    print(
-        memory.memory_key,
-        "=",
-        memory.memory_value,
-    )
-
+    print(memory.memory_key, "=", memory.memory_value)

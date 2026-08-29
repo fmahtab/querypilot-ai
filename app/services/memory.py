@@ -4,6 +4,8 @@ from sqlalchemy.orm import Session
 from app.database.session import SessionLocal
 from app.models.user_memory import UserMemory
 
+from app.services.memory_extractor import MemoryExtractor
+
 def get_user_memories(
     user_id: str,
     db: Session | None = None
@@ -59,3 +61,27 @@ def save_user_memory(
     finally:
         if owns_session:
             session.close()
+    
+
+def process_user_memory(
+    user_id: str,
+    message: str,
+    db: Session | None = None,
+) -> list[UserMemory]:
+
+    extractor = MemoryExtractor()
+    result = extractor.extract(message)
+
+    saved_memories = []
+
+    for extracted_memory in result.memories:
+        memory = save_user_memory(
+            user_id=user_id,
+            memory_key=extracted_memory.memory_key,
+            memory_value=extracted_memory.memory_value,
+            db=db,
+        )
+
+        saved_memories.append(memory)
+
+    return saved_memories

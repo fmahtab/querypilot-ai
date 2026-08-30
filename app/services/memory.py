@@ -85,3 +85,22 @@ def process_user_memory(
         saved_memories.append(memory)
 
     return saved_memories
+
+
+def get_user_memory_context(
+    user_id: str,
+    db: Session | None = None,
+) -> str:
+
+    memories = get_user_memories(
+        user_id=user_id,
+        db=db,
+    )
+
+    if not memories:
+        return ""
+
+    return "\n".join(
+        f"{memory.memory_key}: {memory.memory_value}"
+        for memory in memories
+    )

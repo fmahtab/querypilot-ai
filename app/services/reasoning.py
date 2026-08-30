@@ -23,6 +23,10 @@ RAG_SYSTEM_PROMPT = """
     If provided context doesn't contains enough information to answer the question, 
     say that the information is not available in the RetailStar knowledge base.
     Keep answers concise.
+    User memory may be provided as additional context about the user.
+    Use it only when relevant to adjust the explanation, framing, or level of detail.
+    Do not treat user memory as RetailStar policy or business facts.
+    The retrieved RetailStar knowledge remains the source of truth for RetailStar questions.
     """
 
 CLASSIFIER_PROMPT = """
@@ -149,6 +153,7 @@ class ReasoningService:
         self,
         question: str,
         history: list[dict] | None = None,
+        memory_context: str = "",
     ) -> AskResponse:
 
 
@@ -182,12 +187,15 @@ class ReasoningService:
             sources = list(sources_set)
          
             rag_input = f"""
-            context:
+            RetailStar knowledge:
             {context}
-            
-            question:
+
+            User memory:
+            {memory_context or "No durable user memory available."}
+
+            Question:
             {standalone_question}
-            """
+        """
             
             response = self.client.responses.create(            
                 model=settings.openai_model,

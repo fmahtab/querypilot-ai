@@ -14,6 +14,10 @@ class Settings(BaseSettings):
     openai_api_key: str
     openai_model: str
 
+    google_api_key: str
+    google_genai_use_vertexai: bool = False
+
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

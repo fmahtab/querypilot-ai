@@ -21,7 +21,10 @@ class KnowledgeAgentResult:
     sources: list[str]
 
 
-async def _run_knowledge_agent(question: str) -> KnowledgeAgentResult:
+async def _run_knowledge_agent(
+    question: str,
+    memory_context: str = "",
+    ) -> KnowledgeAgentResult:
     session_service = InMemorySessionService()
 
     session_id = str(uuid.uuid4())
@@ -30,6 +33,9 @@ async def _run_knowledge_agent(question: str) -> KnowledgeAgentResult:
         app_name=APP_NAME,
         user_id=USER_ID,
         session_id=session_id,
+        state={
+            "memory_context": memory_context or "No durable user memory available.",
+        },
     )
 
     runner = Runner(
@@ -74,9 +80,17 @@ async def _run_knowledge_agent(question: str) -> KnowledgeAgentResult:
     )
 
 
-def run_knowledge_agent(question: str) -> KnowledgeAgentResult:
+def run_knowledge_agent(
+    question: str,
+    memory_context: str = "",
+    ) -> KnowledgeAgentResult:
     try:
-        return asyncio.run(_run_knowledge_agent(question))
+        return asyncio.run(
+            _run_knowledge_agent(
+                question,
+                memory_context,
+            )
+        )
     except ServerError as exc:
         raise RuntimeError(
             "The knowledge agent is temporarily unavailable."

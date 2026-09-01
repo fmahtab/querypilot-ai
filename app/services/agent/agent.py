@@ -28,7 +28,7 @@ Give concise and clear answers.
 
 root_agent = Agent(
     name="querypilot_knowledge_agent",
-    model="gemini-flash-latest",
+    model="gemini-3.6-flash",
     description="Answers RetailStar knowledge questions using the RetailStar knowledge base.",
     instruction=AGENT_INSTRUCTION,
     tools=[search_knowledge_base],

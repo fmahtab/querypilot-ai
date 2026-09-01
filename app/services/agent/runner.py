@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
+from google.genai.errors import ServerError
 
 from app.services.agent.agent import root_agent
 
@@ -52,4 +53,9 @@ async def _run_knowledge_agent(question: str) -> str:
 
 
 def run_knowledge_agent(question: str) -> str:
-    return asyncio.run(_run_knowledge_agent(question))
+    try:
+        return asyncio.run(_run_knowledge_agent(question))
+    except ServerError as exc:
+        raise RuntimeError(
+            "The knowledge agent is temporarily unavailable."
+        ) from exc

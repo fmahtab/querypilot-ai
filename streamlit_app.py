@@ -1,7 +1,13 @@
+import os
 import httpx
 import streamlit as st
 from app.services.evals.runner import run_evals
 
+
+API_BASE_URL = os.getenv(
+    "API_BASE_URL",
+    "http://localhost:8000",
+)
 
 st.set_page_config(
     page_title="QueryPilot AI",
@@ -53,7 +59,7 @@ with ask_tab:
             with st.spinner("Thinking..."):
 
                 response = httpx.post(
-                    "http://localhost:8000/ask",
+                    f"{API_BASE_URL}/ask",
                     json={
                         "question": question,
                         "history": history
@@ -116,8 +122,6 @@ with ask_tab:
                             )
 
 
-
-    
 
 
 with eval_tab:

@@ -157,10 +157,17 @@ class ReasoningService:
             )
 
         if question_type == "KNOWLEDGE_BASE":
-            result = run_knowledge_agent(
-                standalone_question,
-                memory_context,
-            )
+            try:
+                result = run_knowledge_agent(
+                    standalone_question,
+                    memory_context,
+                )
+            except RuntimeError:
+                return AskResponse(
+                    answer="The knowledge agent is temporarily unavailable. Please try again shortly.",
+                    requires_database=False,
+                    sources=[],
+                )
 
             return AskResponse(
                 answer=result.answer,

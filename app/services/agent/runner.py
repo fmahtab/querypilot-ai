@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
-from google.genai.errors import ServerError
+from google.genai.errors import ClientError, ServerError
 
 from app.services.agent.agent import root_agent
 
@@ -91,7 +91,7 @@ def run_knowledge_agent(
                 memory_context,
             )
         )
-    except ServerError as exc:
+    except (ClientError, ServerError) as exc:
         raise RuntimeError(
             "The knowledge agent is temporarily unavailable."
         ) from exc

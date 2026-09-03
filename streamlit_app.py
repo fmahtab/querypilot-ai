@@ -1,8 +1,6 @@
 import os
 import httpx
 import streamlit as st
-from app.services.evals.runner import run_evals
-
 
 API_BASE_URL = os.getenv(
     "API_BASE_URL",
@@ -131,6 +129,7 @@ with eval_tab:
         type="primary",
     )
     if run_eval_button:
+        from app.services.evals.runner import run_evals
         with st.spinner("Running evaluations..."):
             eval_results = run_evals()
             st.metric(

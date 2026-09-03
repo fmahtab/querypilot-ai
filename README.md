@@ -124,7 +124,13 @@ Observe Tool Result
 Grounded Answer
 ```
 
-The standalone agent and tool invocation have been successfully tested. Integration of the agent runner into the main `/ask` knowledge-base route is currently in progress.
+The agent is integrated into the main `/ask` knowledge-base route.
+
+For `KNOWLEDGE_BASE` requests, QueryPilot passes the contextualized question and durable user context to the ADK agent. The agent decides when to invoke `search_knowledge_base`, retrieves relevant RetailStar documentation from pgvector, and generates the grounded response.
+
+Source documents are captured directly from the agent's tool response and returned through the `/ask` API without performing a second retrieval.
+
+The end-to-end agent flow has been tested successfully through the FastAPI API.
 
 ## Conversation Memory
 
@@ -178,6 +184,10 @@ Memory may affect the framing or level of detail of an answer, but it is not tre
 In other words:
 
 **RAG determines what is true; memory helps determine how to explain it.**
+
+Durable memory was verified end-to-end by storing user context in PostgreSQL, restarting the FastAPI application, and sending a new request with no conversation history. QueryPilot successfully recalled the user's role and used it to personalize a grounded RetailStar response.
+
+This verifies that long-term context comes from PostgreSQL rather than temporary conversation history or the ADK in-memory session.
 
 ### Forgetting / deletion
 
@@ -240,17 +250,19 @@ QueryPilot AI is under active development as an AI Engineering Bootcamp capstone
 - conversational follow-up handling
 - durable PostgreSQL memory
 - memory extraction and update logic
-- cross-session memory recall
 - TRACE evaluation suite
 - manual failure analysis
 - Streamlit interface
 - Google ADK knowledge agent
 - real knowledge-base retrieval tool
 - production PostgreSQL database and pgvector setup
+- ADK agent integration with the main `/ask` route
+- agent tool-response source propagation
+- end-to-end knowledge-agent routing verification
+- durable memory and cross-session recall verified across application restart
 
 ### In Progress
 
-- integrating the ADK agent into the main knowledge-base route
 - graceful handling of model-provider failures
 - public FastAPI deployment
 - public Streamlit deployment

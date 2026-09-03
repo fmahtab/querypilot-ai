@@ -2,7 +2,6 @@ from app.schemas.ask import AskResponse
 from app.core.config import settings
 from openai import OpenAI
 
-from app.services.rag.retrieval import retrieve_retailstar_docs
 from app.services.agent.runner import run_knowledge_agent
 
 SYSTEM_PROMPT = """
@@ -14,20 +13,6 @@ SYSTEM_PROMPT = """
     answer it using general knowledge.
     Keep answers concise.
     Don't invent data.
-    """
-
-RAG_SYSTEM_PROMPT = """
-    You are QueryPilot, an AI business analytics copilot.
-    
-    Answer the user's question using only the RetailStar context provided to you.
-    Do not invent or infer information that is not supported by the provided context.
-    If provided context doesn't contains enough information to answer the question, 
-    say that the information is not available in the RetailStar knowledge base.
-    Keep answers concise.
-    User memory may be provided as additional context about the user.
-    Use it only when relevant to adjust the explanation, framing, or level of detail.
-    Do not treat user memory as RetailStar policy or business facts.
-    The retrieved RetailStar knowledge remains the source of truth for RetailStar questions.
     """
 
 CLASSIFIER_PROMPT = """

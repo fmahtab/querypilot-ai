@@ -3,6 +3,7 @@ from app.core.config import settings
 from openai import OpenAI
 
 from app.services.rag.retrieval import retrieve_retailstar_docs
+from app.services.agent.runner import run_knowledge_agent
 
 SYSTEM_PROMPT = """
     You are QueryPilot, an AI business analytics copilot.
@@ -171,44 +172,15 @@ class ReasoningService:
             )
 
         if question_type == "KNOWLEDGE_BASE":
-            top_k = 3
-            result = retrieve_retailstar_docs(
+            result = run_knowledge_agent(
                 standalone_question,
-                top_k=top_k,
-                db=None,
+                memory_context,
             )
 
-            context = "\n\n---\n\n".join(
-                [chunk.content for chunk in result.chunks]
-                )
-            sources_set = {
-                chunk.source_file for chunk in result.chunks
-            }
-            sources = list(sources_set)
-         
-            rag_input = f"""
-            RetailStar knowledge:
-            {context}
-
-            User memory:
-            {memory_context or "No durable user memory available."}
-
-            Question:
-            {standalone_question}
-        """
-            
-            response = self.client.responses.create(            
-                model=settings.openai_model,
-                input=[
-                    {"role": "system", "content": RAG_SYSTEM_PROMPT},
-                    {"role": "user", "content": rag_input}
-                ],
-            )
-        
             return AskResponse(
-                answer = response.output_text,
-                requires_database = False,
-                sources = sources
+                answer=result.answer,
+                requires_database=False,
+                sources=result.sources,
             )
 
         if question_type == "GENERAL":

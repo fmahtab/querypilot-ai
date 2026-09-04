@@ -129,9 +129,13 @@ with eval_tab:
         type="primary",
     )
     if run_eval_button:
-        from app.services.evals.runner import run_evals
         with st.spinner("Running evaluations..."):
-            eval_results = run_evals()
+            response = httpx.post(
+                f"{API_BASE_URL}/evals",
+                timeout=300.0,
+            )
+            response.raise_for_status()
+            eval_results = response.json()
             st.metric(
                 "Score",
                 f"{eval_results['score']:.1f}%",

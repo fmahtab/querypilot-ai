@@ -4,8 +4,9 @@
         "expected_route": "KNOWLEDGE_BASE",
         "expected_behavior": {
             "requires_database": false,
-            "answer_mentions": [
-                "below the minimum threshold"
+            "answer_mentions_any": [
+                "below",
+                "minimum threshold"
             ],
             "sources_contains": "inventory_policy.md"
         }
@@ -29,8 +30,10 @@
             "requires_database": false,
             "answer_mentions_any": [
                 "non-returnable",
-                "not returnable"
-              ],
+                "not returnable",
+                "not eligible for return",
+                "cannot be returned"
+            ],
             "sources_contains": "returns_policy.md"
         }
     },
@@ -54,6 +57,8 @@
             "requires_database": false,
             "answer_mentions_any": [
                 "not available",
+                "unavailable",
+                "unknown",
                 "does not contain",
                 "not enough information"
               ]

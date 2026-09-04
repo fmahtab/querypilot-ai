@@ -11,7 +11,6 @@ service = ReasoningService()
 @router.post("/ask", response_model=AskResponse)
 def ask_question(ask_request: AskRequest) -> AskResponse:
     user_id = "demo-user"
-    #user_id = "memory-test-user"
 
     process_user_memory(
         user_id=user_id,

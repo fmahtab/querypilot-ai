@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from app.api.health import health_router
 from app.api.ask import router
+from app.api.evals import evals_router
 
 
 app = FastAPI(
@@ -11,6 +12,7 @@ app = FastAPI(
 
 app.include_router(health_router)
 app.include_router(router)
+app.include_router(evals_router)
 
 @app.get("/")
 def read_root() -> dict[str,str]:

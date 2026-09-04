@@ -20,6 +20,16 @@ The project demonstrates several production-oriented AI engineering patterns, in
 
 The system separates business knowledge from user memory: RetailStar documentation determines **what is true**, while user memory can influence **how information is explained**.
 
+## Live Demo
+
+QueryPilot AI is deployed with a Streamlit frontend and FastAPI backend.
+
+- **Live Application:** https://querypilot-ai-demo.streamlit.app
+- **FastAPI API:** https://querypilot-ai-8uzn.onrender.com
+- **API Documentation:** https://querypilot-ai-8uzn.onrender.com/docs
+
+> The application is hosted on cloud services and may take a few moments to wake up after a period of inactivity.
+
 ## Example Questions
 
 Knowledge-base questions:
@@ -67,6 +77,13 @@ Intent Classifier
                  Grounded Response
 
 ```
+
+The routing responsibilities are intentionally separated:
+
+- `GENERAL` questions are answered through OpenAI.
+- `KNOWLEDGE_BASE` questions are handled by the Google ADK/Gemini agent with access to the RAG retrieval tool.
+- `DATABASE` questions are identified but currently return a placeholder response pending future natural-language-to-SQL support.
+
 
 The DATABASE route is currently a placeholder for future natural-language-to-SQL functionality.
 
@@ -126,7 +143,10 @@ Grounded Answer
 
 The agent is integrated into the main `/ask` knowledge-base route.
 
-For `KNOWLEDGE_BASE` requests, QueryPilot passes the contextualized question and durable user context to the ADK agent. The agent decides when to invoke `search_knowledge_base`, retrieves relevant RetailStar documentation from pgvector, and generates the grounded response.
+For `KNOWLEDGE_BASE` requests, QueryPilot passes the contextualized question
+to the ADK agent while providing durable user context through the agent
+session state. The agent can invoke `search_knowledge_base`, retrieve relevant
+RetailStar documentation from pgvector, and generate a grounded response.
 
 Source documents are captured directly from the agent's tool response and returned through the `/ask` API without performing a second retrieval.
 
@@ -199,15 +219,30 @@ The current demo also uses a fixed demo user rather than production authenticati
 
 ## Evaluation
 
-QueryPilot includes an evaluation workflow for testing routing, retrieval, grounded responses, and refusal behavior.
+QueryPilot includes an evaluation workflow for testing routing, retrieval,
+grounded responses, source attribution, database-required questions, and
+unsupported-question handling.
 
-A golden evaluation suite currently contains **11 test cases**, with the latest pre-agent-integration run passing:
+The golden evaluation suite contains **11 test cases** covering all three
+routing paths:
 
+- `KNOWLEDGE_BASE`
+- `DATABASE`
+- `GENERAL`
 
-**11 / 11 tests (100%)**
+After integrating the Google ADK knowledge agent, durable memory, and the
+final request flow, the complete regression suite was executed again.
 
+### Final Regression Result
 
-Manual TRACE analysis was also performed across 18 traces.
+**11 / 11 tests passed (100%)**
+
+The evaluation suite is exposed through the FastAPI backend and can be
+executed from the Streamlit Evaluations interface.
+
+![QueryPilot AI evaluation results](docs/images/querypilot-eval-results.png)
+
+Manual TRACE analysis was also performed across **18 traces**.
 
 Observed failure modes were categorized into:
 
@@ -216,9 +251,11 @@ Observed failure modes were categorized into:
 - Knowledge Base Gap
 - Unsupported Answer Failure
 
-The evaluation process has already been used to identify and correct issues in both the knowledge base and routing logic.
-
-A final regression evaluation will be performed after the ADK agent is integrated into the main request flow.
+The evaluation process identified issues in routing, knowledge coverage,
+and brittle output assertions. For example, semantically correct LLM
+responses can use different wording, so evaluation assertions were designed
+to validate important concepts and acceptable response variants rather than
+requiring a single exact sentence.
 
 ## Tech Stack
 
@@ -237,44 +274,55 @@ A final regression evaluation will be performed after the ADK agent is integrate
 
 ## Project Status
 
-QueryPilot AI is under active development as an AI Engineering Bootcamp capstone.
+QueryPilot AI was developed as an AI Engineering Bootcamp capstone and is
+deployed as an end-to-end working application.
 
 ### Completed
 
 - FastAPI `/ask` endpoint
-- intent classification and routing
-- RAG ingestion pipeline
-- pgvector semantic retrieval
+- intent classification and three-way routing
+- RAG document ingestion pipeline
+- PostgreSQL/pgvector semantic retrieval
 - grounded RetailStar knowledge responses
-- source tracking
-- conversational follow-up handling
-- durable PostgreSQL memory
-- memory extraction and update logic
-- TRACE evaluation suite
-- manual failure analysis
-- Streamlit interface
-- Google ADK knowledge agent
-- real knowledge-base retrieval tool
-- production PostgreSQL database and pgvector setup
-- ADK agent integration with the main `/ask` route
-- agent tool-response source propagation
-- end-to-end knowledge-agent routing verification
-- durable memory and cross-session recall verified across application restart
+- source tracking and attribution
+- conversational follow-up contextualization
+- durable PostgreSQL user memory
+- memory extraction and upsert logic
+- cross-session durable memory recall
+- Google ADK/Gemini knowledge agent
+- `search_knowledge_base` agent tool
+- agent tool-call and tool-response workflow
+- agent source propagation
+- graceful knowledge-agent provider failure handling
+- golden evaluation suite
+- 18-trace manual TRACE analysis
+- final regression evaluation: **11/11 passed (100%)**
+- Streamlit application
+- production PostgreSQL + pgvector database
+- deployed FastAPI backend
+- deployed Streamlit frontend
 
-### In Progress
+### Current Limitation
 
-- graceful handling of model-provider failures
-- public FastAPI deployment
-- public Streamlit deployment
-- final regression evaluation
-- capstone demo preparation
+The `DATABASE` route identifies questions that require operational RetailStar
+data but intentionally does not execute database queries yet.
+
+For example:
+
+> "Which store had the highest sales last month?"
+
+is correctly routed to `DATABASE`, but QueryPilot returns a safe placeholder
+instead of generating or executing SQL.
+
+Natural-language-to-SQL is planned as a future extension.
+
 
 ## Planned Future Work
 
 Potential extensions include:
 
 - natural-language-to-SQL generation and execution
-- SQL validation and self-correction
+- read-only SQL validation and self-correction
 - authenticated user accounts
 - per-user memory isolation
 - explicit memory management and deletion

@@ -4,6 +4,7 @@ from .rag_chunk import RagChunk
 from .user_memory import UserMemory
 from .store import Store
 from .inventory import Inventory
+from .order import Order
 
 __all__ = [
     "Category",
@@ -12,4 +13,5 @@ __all__ = [
     "UserMemory",
     "Store",
     "Inventory",
+    "Order",
 ]

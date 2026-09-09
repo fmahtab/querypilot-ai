@@ -5,7 +5,7 @@ from .user_memory import UserMemory
 from .store import Store
 from .inventory import Inventory
 from .order import Order
-
+from .order_item import OrderItem
 __all__ = [
     "Category",
     "Product",
@@ -14,4 +14,5 @@ __all__ = [
     "Store",
     "Inventory",
     "Order",
+    "OrderItem",
 ]

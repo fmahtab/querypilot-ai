@@ -3,6 +3,7 @@ from .product import Product
 from .rag_chunk import RagChunk
 from .user_memory import UserMemory
 from .store import Store
+from .inventory import Inventory
 
 __all__ = [
     "Category",
@@ -10,4 +11,5 @@ __all__ = [
     "RagChunk",
     "UserMemory",
     "Store",
+    "Inventory",
 ]

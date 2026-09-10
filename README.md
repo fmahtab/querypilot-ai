@@ -257,21 +257,18 @@ responses can use different wording, so evaluation assertions were designed
 to validate important concepts and acceptable response variants rather than
 requiring a single exact sentence.
 
-## Seed the RetailStar database from Olist
+## Database seeding
 
-Download and extract the
+QueryPilot's demonstration database can be populated from the
 [Brazilian E-Commerce Public Dataset by Olist](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce).
 
-The raw CSV files are not committed to this repository. You can extract them
-outside the repository and pass that directory to the importer, or place them
-under the ignored `data/raw/olist/` directory.
+The importer transforms a reproducible sample of external e-commerce data into
+QueryPilot's relational schema. Some fields are derived because the source
+dataset does not contain every field required by QueryPilot.
 
-Then start PostgreSQL, apply the migrations, and import a deterministic sample:
+For setup instructions, field mappings, limitations, and production-data
+requirements, see [Data ingestion](docs/data-ingestion.md).
 
-```bash
-docker compose up -d db
-alembic upgrade head
-python -m scripts.import_olist data/raw/olist
 
 ## Tech Stack
 

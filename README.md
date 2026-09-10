@@ -257,6 +257,22 @@ responses can use different wording, so evaluation assertions were designed
 to validate important concepts and acceptable response variants rather than
 requiring a single exact sentence.
 
+## Seed the RetailStar database from Olist
+
+Download and extract the
+[Brazilian E-Commerce Public Dataset by Olist](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce).
+
+The raw CSV files are not committed to this repository. You can extract them
+outside the repository and pass that directory to the importer, or place them
+under the ignored `data/raw/olist/` directory.
+
+Then start PostgreSQL, apply the migrations, and import a deterministic sample:
+
+```bash
+docker compose up -d db
+alembic upgrade head
+python -m scripts.import_olist data/raw/olist
+
 ## Tech Stack
 
 - Python

@@ -44,7 +44,7 @@ Table: stores
 - store_code (text, unique)
 - name (text)
 - city (text)
-- state (text)
+- state (text) - Brazilian two-letter state code, e.g. SP, RJ
 - is_active (boolean)
 
 
@@ -60,5 +60,4 @@ Business rules:
 - Relative dates use CURRENT_DATE. Example for "last month":
   order_date >= date_trunc('month', CURRENT_DATE) - interval '1 month'
   AND order_date < date_trunc('month', CURRENT_DATE)
-- state (text) - Brazilian two-letter state code, e.g. SP, RJ
 """

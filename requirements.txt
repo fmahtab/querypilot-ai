@@ -2,6 +2,8 @@
 annotated-doc==0.0.4
 annotated-types==0.7.0
 anyio==4.14.2
+boto3==1.43.110
+botocore[crt]==1.43.110
 certifi==2026.7.22
 click==8.4.2
 colorama==0.4.6
